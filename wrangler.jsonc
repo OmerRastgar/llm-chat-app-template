@@ -18,5 +18,11 @@
 	"ai": {
 		"binding": "AI"
 	},
+	"vectorize": [
+		{
+			"binding": "PROD_SEARCH",
+			"index_name": "production-doc-search"
+		}
+	],
 	"upload_source_maps": true
 }

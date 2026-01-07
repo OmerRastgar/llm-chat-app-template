@@ -12,6 +12,16 @@ export interface Env {
 	 * Binding for static assets.
 	 */
 	ASSETS: { fetch: (request: Request) => Promise<Response> };
+
+	/**
+	 * Vectorize index binding (Cloudflare Vectorize)
+	 * Bound by name in `wrangler.jsonc` under the `vectorize` array.
+	 * Example binding name: `PROD_SEARCH` — use `env.PROD_SEARCH` to query.
+	 */
+	PROD_SEARCH?: {
+		/** Query the index with an embedding or text; implementation depends on provider */
+		query?: (opts: { query: string | number[]; k?: number }) => Promise<any>;
+	};
 }
 
 /**
