@@ -21,7 +21,7 @@
 	"vectorize": [
 		{
 			"binding": "PROD_SEARCH",
-			"index_name": "production-doc-search"
+			"index_name": "pci"
 		}
 	],
 	"upload_source_maps": true

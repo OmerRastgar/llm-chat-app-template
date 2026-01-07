@@ -13,7 +13,7 @@ Purpose: help an AI coding agent be immediately productive in this Cloudflare Wo
   - `package.json` / `wrangler.jsonc` — dev/build/deploy scripts and Wrangler configuration.
 
   - **Vectorize binding**:
-    - This repo now includes a Vectorize index binding example in `wrangler.jsonc` named `PROD_SEARCH` bound to the index `production-doc-search`.
+    - This repo now includes a Vectorize index binding example in `wrangler.jsonc` named `PROD_SEARCH` bound to the index `pci`.
     - After adding or changing bindings, run `npm run cf-typegen` to refresh Worker types.
     - Access the binding from Worker code as `env.PROD_SEARCH`. The shape in `src/types.ts` is minimal — treat it as a platform-provided client and call it via its query method or by fetching the REST interface if needed.
 
@@ -42,7 +42,7 @@ Purpose: help an AI coding agent be immediately productive in this Cloudflare Wo
   "vectorize": [
     {
       "binding": "PROD_SEARCH",
-      "index_name": "production-doc-search"
+      "index_name": "pci"
     }
   ]
   ```
