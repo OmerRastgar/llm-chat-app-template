@@ -67,6 +67,36 @@ async function handleChatRequest(
 			messages.unshift({ role: "system", content: SYSTEM_PROMPT });
 		}
 
+		// Optional: retrieval-augmented generation using the Vectorize index binding
+		try {
+			// Find most recent user message to use as a query
+			const lastUserMsg = [...messages].reverse().find((m) => m.role === "user")?.content || "";
+			if (env.PROD_SEARCH?.query && lastUserMsg) {
+				const raw = await env.PROD_SEARCH.query({ query: lastUserMsg, k: 5 });
+				// Normalize common shapes: { results }, { hits }, { items }, or raw array
+				let hits: any[] = [];
+				if (Array.isArray(raw)) hits = raw;
+				else if (Array.isArray(raw?.results)) hits = raw.results;
+				else if (Array.isArray(raw?.hits)) hits = raw.hits;
+				else if (Array.isArray(raw?.items)) hits = raw.items;
+				// Build a short context from top hits
+				if (hits.length > 0) {
+					const snippets = hits.slice(0, 5).map((h: any, i: number) => {
+						const id = h.id ?? h.document_id ?? i;
+						const score = h.score ?? h.similarity ?? "";
+						const text = h.text ?? h.content ?? h.metadata?.text ?? h.document ?? JSON.stringify(h);
+						return `Source(${id}) score=${score}: ${String(text).slice(0, 800)}`;
+					});
+					messages.unshift({
+						role: "system",
+						content: `Relevant context (from PCI vector index):\n\n${snippets.join("\n\n")}\n\nUse this information to answer the user.`,
+					});
+				}
+			}
+		} catch (e) {
+			console.error("Vectorize retrieval failed:", e);
+		}
+
 		const stream = await env.AI.run(
 			MODEL_ID,
 			{
